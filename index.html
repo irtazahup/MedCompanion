@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Medication Form</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: 30px auto; padding: 20px; background-color: #f4f7f6; }
         .form-container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -17,6 +18,7 @@
         .del-time { background: none; color: #ff4d4d; border: none; font-size: 1.2em; cursor: pointer; padding: 0 5px; }
         button { padding: 10px 20px; border-radius: 5px; cursor: pointer; border: none; font-weight: bold; }
         .submit-btn { background: #007bff; color: white; width: 100%; margin-top: 20px; }
+        .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
         .add-btn { background: #28a745; color: white; margin-top: 10px; font-size: 0.8em; }
         .add-time-btn { background: #6c757d; color: white; font-size: 0.7em; margin-top: 8px; padding: 5px 10px; }
         #successMessage { display: none; text-align: center; padding: 40px; background: white; border-radius: 12px; }
@@ -29,11 +31,11 @@
     <form id="medicationForm">
         <div class="section">
             <label>Attendant Number</label>
-            <input type="tel" required>
+            <input type="tel" id="attendant_phone" placeholder="+92..." required>
             <label>Patient Name</label>
-            <input type="text" required>
+            <input type="text" id="patient_name" required>
             <label>Patient Number</label>
-            <input type="tel" required>
+            <input type="tel" id="patient_phone" placeholder="+92..." required>
         </div>
 
         <div class="section">
@@ -42,9 +44,9 @@
                 <div class="medicine-entry">
                     <button type="button" class="remove-btn" onclick="removeMedicine(this)">Delete Medicine</button>
                     <label>Medicine Name</label>
-                    <input type="text" required>
+                    <input type="text" class="med-name" required>
                     <label>Dosage</label>
-                    <input type="text" placeholder="e.g. 1 pill" required>
+                    <input type="text" class="dosage" placeholder="e.g. 1 pill" required>
                     
                     <div style="display: flex; gap: 10px;">
                         <div style="flex: 1;">
@@ -60,7 +62,7 @@
                     <label>Dosage Times</label>
                     <div class="time-list">
                         <div class="time-row">
-                            <input type="time" required>
+                            <input type="time" class="reminder-time" required>
                         </div>
                     </div>
                     <button type="button" class="add-time-btn" onclick="addTime(this)">+ Add Time</button>
@@ -68,7 +70,7 @@
             </div>
             <button type="button" class="add-btn" onclick="addMedicine()">+ Add Another Medicine</button>
         </div>
-        <button type="submit" class="submit-btn">Submit Record</button>
+        <button type="submit" id="submitBtn" class="submit-btn">Submit Record</button>
     </form>
 </div>
 
@@ -78,66 +80,6 @@
     <button onclick="window.location.reload()">New Entry</button>
 </div>
 
-<script>
-    // Ensure End Date cannot be before Start Date
-    function updateMinEndDate(input) {
-        const endDateInput = input.closest('.medicine-entry').querySelector('.end-date');
-        endDateInput.min = input.value;
-        if (endDateInput.value && endDateInput.value < input.value) {
-            endDateInput.value = input.value;
-        }
-    }
-
-    function addMedicine() {
-        const list = document.getElementById('medicineList');
-        const firstEntry = document.querySelector('.medicine-entry');
-        const newEntry = firstEntry.cloneNode(true);
-        
-        // Reset inputs and keep only one time field
-        newEntry.querySelectorAll('input').forEach(i => i.value = '');
-        const timeList = newEntry.querySelector('.time-list');
-        timeList.innerHTML = `<div class="time-row"><input type="time" required></div>`;
-        
-        list.appendChild(newEntry);
-    }
-
-    function removeMedicine(btn) {
-        if (document.querySelectorAll('.medicine-entry').length > 1) {
-            btn.closest('.medicine-entry').remove();
-        } else {
-            alert("At least one medicine is required.");
-        }
-    }
-
-    function addTime(btn) {
-        const container = btn.previousElementSibling;
-        const timeRow = document.createElement('div');
-        timeRow.className = 'time-row';
-        timeRow.innerHTML = `<input type="time" required onchange="checkUniqueTime(this)">
-                             <button type="button" class="del-time" onclick="this.parentElement.remove()">×</button>`;
-        container.appendChild(timeRow);
-    }
-
-    // Validation for unique times within one medicine
-    function checkUniqueTime(input) {
-        const container = input.closest('.time-list');
-        const allTimes = Array.from(container.querySelectorAll('input[type="time"]'))
-                             .map(i => i.value)
-                             .filter(v => v !== "");
-        
-        const isDuplicate = allTimes.filter(item => item === input.value).length > 1;
-        if (isDuplicate) {
-            alert("This time has already been added for this medicine.");
-            input.value = "";
-        }
-    }
-
-    document.getElementById('medicationForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        document.getElementById('formWrapper').style.display = 'none';
-        document.getElementById('successMessage').style.display = 'block';
-    });
-</script>
-
+<script type="module" src="script.js"></script>
 </body>
 </html>
