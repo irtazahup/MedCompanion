@@ -1,8 +1,5 @@
-
-const SUPABASE_URL = "me nhi bataonga"
-const SUPABASE_ANON_KEY = "ya b nhi bataonga";
-// 1. CONFIGURATION
-
+// script.js
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
 
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // 2. EXPOSE FUNCTIONS TO HTML
