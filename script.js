@@ -124,3 +124,29 @@ if (medicationForm) {
 } else {
     console.error("Could not find the medicationForm element!");
 }
+
+window.lookupPatient = async function(phone) {
+    if (phone.length < 10) return; // Don't search until a full number is entered
+
+    const nameInput = document.getElementById('patient_name');
+    
+    // Check Supabase for this phone number
+    const { data, error } = await _supabase
+        .from('profiles')
+        .select('patient_name')
+        .eq('patient_phone', phone)
+        .maybeSingle();
+
+    if (data) {
+        // Patient found! Fill name and lock it.
+        nameInput.value = data.patient_name;
+        nameInput.readOnly = true;
+        nameInput.style.backgroundColor = "#e9ecef"; // Gray out to show it's locked
+        console.log("Existing patient found. Name locked.");
+    } else {
+        // New patient. Unlock name field.
+        nameInput.readOnly = false;
+        nameInput.style.backgroundColor = "white";
+        console.log("New patient. Name field ready.");
+    }
+};

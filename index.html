@@ -1,85 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Medication Form</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: 30px auto; padding: 20px; background-color: #f4f7f6; }
-        .form-container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .section { margin-bottom: 25px; }
-        .medicine-entry { position: relative; background: #fdfdfd; padding: 15px; margin-bottom: 20px; border: 1px solid #eee; border-radius: 8px; border-left: 5px solid #007bff; }
-        .remove-btn { position: absolute; top: 10px; right: 10px; background: #ff4d4d; color: white; border: none; border-radius: 4px; padding: 5px 10px; cursor: pointer; font-size: 0.7em; }
-        label { display: block; margin-top: 12px; font-size: 0.85em; color: #666; font-weight: bold; }
-        input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        .time-row { display: flex; gap: 5px; align-items: center; margin-top: 5px; }
-        .time-row input { margin-top: 0; }
-        .del-time { background: none; color: #ff4d4d; border: none; font-size: 1.2em; cursor: pointer; padding: 0 5px; }
-        button { padding: 10px 20px; border-radius: 5px; cursor: pointer; border: none; font-weight: bold; }
-        .submit-btn { background: #007bff; color: white; width: 100%; margin-top: 20px; }
-        .submit-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .add-btn { background: #28a745; color: white; margin-top: 10px; font-size: 0.8em; }
-        .add-time-btn { background: #6c757d; color: white; font-size: 0.7em; margin-top: 8px; padding: 5px 10px; }
-        #successMessage { display: none; text-align: center; padding: 40px; background: white; border-radius: 12px; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #f4f7f6;
+        }
+
+        .form-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .medicine-entry {
+            position: relative;
+            background: #fdfdfd;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            border-left: 5px solid #007bff;
+        }
+
+        .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 0.7em;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            font-size: 0.85em;
+            color: #666;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .time-row {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            margin-top: 5px;
+        }
+
+        .time-row input {
+            margin-top: 0;
+        }
+
+        .del-time {
+            background: none;
+            color: #ff4d4d;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+        }
+
+        .submit-btn {
+            background: #007bff;
+            color: white;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .add-btn {
+            background: #28a745;
+            color: white;
+            margin-top: 10px;
+            font-size: 0.8em;
+        }
+
+        .add-time-btn {
+            background: #6c757d;
+            color: white;
+            font-size: 0.7em;
+            margin-top: 8px;
+            padding: 5px 10px;
+        }
+
+        #successMessage {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+        }
     </style>
 </head>
+
 <body>
 
-<div class="form-container" id="formWrapper">
-    <h2 style="text-align: center;">Medication Entry</h2>
-    <form id="medicationForm">
-        <div class="section">
-            <label>Attendant Number</label>
-            <input type="tel" id="attendant_phone" placeholder="+92..." required>
-            <label>Patient Name</label>
-            <input type="text" id="patient_name" required>
-            <label>Patient Number</label>
-            <input type="tel" id="patient_phone" placeholder="+92..." required>
-        </div>
+    <div class="form-container" id="formWrapper">
+        <h2 style="text-align: center;">Medication Entry</h2>
+        <form id="medicationForm">
+            <div class="section">
+                <label>Attendant Number</label>
+                <input type="tel" id="attendant_phone" placeholder="+92..." required>
+                <label>Patient Number</label>
+                <input type="tel" id="patient_phone" placeholder="+92..." oninput="lookupPatient(this.value)" required>
 
-        <div class="section">
-            <h3>Medicines</h3>
-            <div id="medicineList">
-                <div class="medicine-entry">
-                    <button type="button" class="remove-btn" onclick="removeMedicine(this)">Delete Medicine</button>
-                    <label>Medicine Name</label>
-                    <input type="text" class="med-name" required>
-                    <label>Dosage</label>
-                    <input type="text" class="dosage" placeholder="e.g. 1 pill" required>
-                    
-                    <div style="display: flex; gap: 10px;">
-                        <div style="flex: 1;">
-                            <label>Start Date</label>
-                            <input type="date" class="start-date" onchange="updateMinEndDate(this)" required>
-                        </div>
-                        <div style="flex: 1;">
-                            <label>End Date</label>
-                            <input type="date" class="end-date" required>
-                        </div>
-                    </div>
-
-                    <label>Dosage Times</label>
-                    <div class="time-list">
-                        <div class="time-row">
-                            <input type="time" class="reminder-time" required>
-                        </div>
-                    </div>
-                    <button type="button" class="add-time-btn" onclick="addTime(this)">+ Add Time</button>
-                </div>
+                <label>Patient Name</label>
+                <input type="text" id="patient_name" required>
             </div>
-            <button type="button" class="add-btn" onclick="addMedicine()">+ Add Another Medicine</button>
-        </div>
-        <button type="submit" id="submitBtn" class="submit-btn">Submit Record</button>
-    </form>
-</div>
 
-<div id="successMessage" class="form-container">
-    <h2 style="color: #28a745;">✔ Submitted!</h2>
-    <p>Record has been saved successfully.</p>
-    <button onclick="window.location.reload()">New Entry</button>
-</div>
+            <div class="section">
+                <h3>Medicines</h3>
+                <div id="medicineList">
+                    <div class="medicine-entry">
+                        <button type="button" class="remove-btn" onclick="removeMedicine(this)">Delete Medicine</button>
+                        <label>Medicine Name</label>
+                        <input type="text" class="med-name" required>
+                        <label>Dosage</label>
+                        <input type="text" class="dosage" placeholder="e.g. 1 pill" required>
 
-<script type="module" src="script.js"></script>
+                        <div style="display: flex; gap: 10px;">
+                            <div style="flex: 1;">
+                                <label>Start Date</label>
+                                <input type="date" class="start-date" onchange="updateMinEndDate(this)" required>
+                            </div>
+                            <div style="flex: 1;">
+                                <label>End Date</label>
+                                <input type="date" class="end-date" required>
+                            </div>
+                        </div>
+
+                        <label>Dosage Times</label>
+                        <div class="time-list">
+                            <div class="time-row">
+                                <input type="time" class="reminder-time" required>
+                            </div>
+                        </div>
+                        <button type="button" class="add-time-btn" onclick="addTime(this)">+ Add Time</button>
+                    </div>
+                </div>
+                <button type="button" class="add-btn" onclick="addMedicine()">+ Add Another Medicine</button>
+            </div>
+            <button type="submit" id="submitBtn" class="submit-btn">Submit Record</button>
+        </form>
+    </div>
+
+    <div id="successMessage" class="form-container">
+        <h2 style="color: #28a745;">✔ Submitted!</h2>
+        <p>Record has been saved successfully.</p>
+        <button onclick="window.location.reload()">New Entry</button>
+    </div>
+
+    <script type="module" src="script.js"></script>
 </body>
+
 </html>
