@@ -138,9 +138,9 @@
         <form id="medicationForm">
             <div class="section">
                 <label>Attendant Number</label>
-                <input type="tel" id="attendant_phone" placeholder="+92..." required>
+                <input type="tel" id="attendant_phone" placeholder="+92..." value="+" pattern="\+[0-9]{10,15}" title="Enter a phone number with a leading + and 10 to 15 digits" onfocus="ensurePhonePrefix(this)" oninput="formatPhoneNumber(this)" required>
                 <label>Patient Number</label>
-                <input type="tel" id="patient_phone" placeholder="+92..." oninput="lookupPatient(this.value)" required>
+                <input type="tel" id="patient_phone" placeholder="+92..." value="+" pattern="\+[0-9]{10,15}" title="Enter a phone number with a leading + and 10 to 15 digits" onfocus="ensurePhonePrefix(this)" oninput="formatPhoneNumber(this); lookupPatient(this.value)" required>
 
                 <label>Patient Name</label>
                 <input type="text" id="patient_name" required>

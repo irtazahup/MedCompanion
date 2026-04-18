@@ -4,6 +4,19 @@ import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // 2. EXPOSE FUNCTIONS TO HTML
 // Since script is a module, we must manually attach functions to the 'window' object
+window.ensurePhonePrefix = function(input) {
+    if (input.value === '') {
+        input.value = '+';
+    } else if (!input.value.startsWith('+')) {
+        input.value = `+${input.value.replace(/^\++/, '')}`;
+    }
+};
+
+window.formatPhoneNumber = function(input) {
+    const digits = input.value.replace(/\D/g, '');
+    input.value = digits ? `+${digits}` : '+';
+};
+
 window.updateMinEndDate = function(input) {
     const endDateInput = input.closest('.medicine-entry').querySelector('.end-date');
     endDateInput.min = input.value;
@@ -52,10 +65,15 @@ if (medicationForm) {
         submitBtn.innerText = "Processing...";
 
         // Collect Profile Data
+        const attendantPhone = document.getElementById('attendant_phone');
+        const patientPhone = document.getElementById('patient_phone');
+        formatPhoneNumber(attendantPhone);
+        formatPhoneNumber(patientPhone);
+
         const patientData = {
-            attendant_phone: document.getElementById('attendant_phone').value,
+            attendant_phone: attendantPhone.value,
             patient_name: document.getElementById('patient_name').value,
-            patient_phone: document.getElementById('patient_phone').value,
+            patient_phone: patientPhone.value,
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
         };
 
@@ -126,7 +144,8 @@ if (medicationForm) {
 }
 
 window.lookupPatient = async function(phone) {
-    if (phone.length < 10) return; // Don't search until a full number is entered
+    const normalizedPhone = phone.replace(/\D/g, '');
+    if (normalizedPhone.length < 10) return; // Don't search until a full number is entered
 
     const nameInput = document.getElementById('patient_name');
     
@@ -134,7 +153,7 @@ window.lookupPatient = async function(phone) {
     const { data, error } = await _supabase
         .from('profiles')
         .select('patient_name')
-        .eq('patient_phone', phone)
+        .eq('patient_phone', `+${normalizedPhone}`)
         .maybeSingle();
 
     if (data) {
